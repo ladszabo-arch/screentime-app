@@ -3,7 +3,13 @@ import { createClient } from '@/lib/supabase/server'
 import { adminSetPassword } from './actions'
 import { ArrowLeft, UserCog } from 'lucide-react'
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ success?: string; error?: string }>
+}) {
+  const params = await searchParams
+
   const supabase = await createClient()
 
   const {
@@ -39,12 +45,27 @@ export default async function AdminUsersPage() {
         Späť na dashboard
       </a>
 
-      <header className="mb-6 flex items-center gap-3">
+            <header className="mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600">
           <UserCog className="text-white" size={20} />
         </div>
         <h1 className="text-xl font-bold text-white">Nastavenie hesiel</h1>
       </header>
+
+      {params.success && (
+        <p className="mb-4 rounded-lg border border-emerald-900/50 bg-emerald-950/50 p-3 text-sm text-emerald-400">
+          Heslo bolo úspešne zmenené.
+        </p>
+      )}
+
+      {params.error && (
+        <p className="mb-4 rounded-lg border border-rose-900/50 bg-rose-950/50 p-3 text-sm text-rose-400">
+          {params.error === 'short'
+            ? 'Heslo musí mať aspoň 6 znakov.'
+            : 'Nastala chyba pri zmene hesla.'}
+        </p>
+      )}
+
 
       <div className="flex flex-col gap-4">
         {allUsers?.map((u) => (

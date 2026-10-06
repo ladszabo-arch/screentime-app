@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 export async function adminSetPassword(formData: FormData) {
   const supabase = await createClient()
@@ -12,7 +13,7 @@ export async function adminSetPassword(formData: FormData) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'Nie si prihlásený.' }
+    redirect('/login')
   }
 
   const { data: profile } = await supabase
@@ -22,14 +23,14 @@ export async function adminSetPassword(formData: FormData) {
     .single()
 
   if (profile?.role !== 'parent') {
-    return { error: 'Nemáš oprávnenie.' }
+    redirect('/')
   }
 
   const targetUserId = formData.get('user_id') as string
   const newPassword = formData.get('password') as string
 
   if (!newPassword || newPassword.length < 6) {
-    return { error: 'Heslo musí mať aspoň 6 znakov.' }
+    redirect('/admin-users?error=short')
   }
 
   const adminClient = createAdminClient()
@@ -39,9 +40,10 @@ export async function adminSetPassword(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    redirect('/admin-users?error=1')
   }
 
   revalidatePath('/admin-users')
-  return { success: true }
+  redirect('/admin-users?success=1')
 }
+
