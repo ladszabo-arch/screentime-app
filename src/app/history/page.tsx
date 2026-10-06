@@ -1,5 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import BottomNav from '@/components/BottomNav'
+import { History as HistoryIcon, ArrowLeft, Gift, TrendingDown, Smartphone, Sun } from 'lucide-react'
+
+const typeConfig: Record<string, { label: string; icon: any; color: string }> = {
+  reward: { label: 'Odmena', icon: Gift, color: 'text-emerald-400 bg-emerald-500/10' },
+  penalty: { label: 'Trest', icon: TrendingDown, color: 'text-rose-400 bg-rose-500/10' },
+  usage: { label: 'Spotreba', icon: Smartphone, color: 'text-amber-400 bg-amber-500/10' },
+  daily_baseline: { label: 'Denný základ', icon: Sun, color: 'text-sky-400 bg-sky-500/10' },
+}
 
 export default async function HistoryPage() {
   const supabase = await createClient()
@@ -29,54 +38,71 @@ export default async function HistoryPage() {
 
   const { data: transactions } = await query
 
-  const typeLabels: Record<string, string> = {
-    reward: 'Odmena',
-    penalty: 'Trest',
-    usage: 'Spotreba',
-    daily_baseline: 'Denný základ',
-  }
-
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-6 text-2xl font-bold">História</h1>
-
-      <a href="/" className="mb-6 inline-block text-blue-600 underline">
-        ← Späť na dashboard
+    <main className="mx-auto min-h-screen max-w-2xl px-4 pb-28 pt-8">
+      <a
+        href="/"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200"
+      >
+        <ArrowLeft size={16} />
+        Späť na dashboard
       </a>
 
+      <header className="mb-6 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600">
+          <HistoryIcon className="text-white" size={20} />
+        </div>
+        <h1 className="text-xl font-bold text-white">História</h1>
+      </header>
+
       <div className="flex flex-col gap-3">
-        {transactions?.map((t: any) => (
-          <div
-            key={t.id}
-            className="flex items-center justify-between rounded-lg bg-white p-4 shadow-md"
-          >
-            <div>
-              <p className="font-semibold">
-                {profile?.role === 'parent' ? `${t.profiles?.full_name} — ` : ''}
-                {t.reason}
-              </p>
-              <p className="text-sm text-gray-500">
-                {typeLabels[t.type] ?? t.type} ·{' '}
-                {new Date(t.created_at).toLocaleString('sk-SK')}
+        {transactions?.map((t: any) => {
+          const conf = typeConfig[t.type] ?? {
+            label: t.type,
+            icon: Gift,
+            color: 'text-slate-400 bg-slate-500/10',
+          }
+          const Icon = conf.icon
+
+          return (
+            <div
+              key={t.id}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-md shadow-black/10"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${conf.color}`}>
+                  <Icon size={18} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    {profile?.role === 'parent' ? `${t.profiles?.full_name} — ` : ''}
+                    {t.reason}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {conf.label} ·{' '}
+                    {new Date(t.created_at).toLocaleString('sk-SK')}
+                  </p>
+                </div>
+              </div>
+              <p
+                className={`shrink-0 text-lg font-bold ${
+                  t.amount >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                }`}
+              >
+                {t.amount >= 0 ? '+' : ''}
+                {t.amount} min
               </p>
             </div>
-            <p
-              className={
-                t.amount >= 0
-                  ? 'text-xl font-bold text-green-600'
-                  : 'text-xl font-bold text-red-600'
-              }
-            >
-              {t.amount >= 0 ? '+' : ''}
-              {t.amount} min
-            </p>
-          </div>
-        ))}
+          )
+        })}
 
         {transactions?.length === 0 && (
-          <p className="text-gray-500">Zatiaľ žiadne záznamy.</p>
+          <p className="text-center text-sm text-slate-500">Zatiaľ žiadne záznamy.</p>
         )}
       </div>
+
+      <BottomNav isParent={profile?.role === 'parent'} />
     </main>
   )
 }
+

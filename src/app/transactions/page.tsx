@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createTransaction } from './actions'
+import BottomNav from '@/components/BottomNav'
+import { ArrowLeftRight, ArrowLeft } from 'lucide-react'
 
 export default async function TransactionsPage() {
   const supabase = await createClient()
@@ -35,21 +37,33 @@ export default async function TransactionsPage() {
     .order('title', { ascending: true })
 
   return (
-    <main className="mx-auto max-w-xl p-8">
-      <h1 className="mb-6 text-2xl font-bold">Pridať / Odobrať minúty</h1>
-
-      <a href="/" className="mb-6 inline-block text-blue-600 underline">
-        ← Späť na dashboard
+    <main className="mx-auto min-h-screen max-w-xl px-4 pb-28 pt-8">
+      <a
+        href="/"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200"
+      >
+        <ArrowLeft size={16} />
+        Späť na dashboard
       </a>
 
-      <form action={createTransaction} className="rounded-lg bg-white p-6 shadow-md">
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+      <header className="mb-6 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+          <ArrowLeftRight className="text-white" size={20} />
+        </div>
+        <h1 className="text-xl font-bold text-white">Pridať / Odobrať minúty</h1>
+      </header>
+
+      <form
+        action={createTransaction}
+        className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-lg shadow-black/20"
+      >
+        <label className="mb-1.5 block text-xs font-medium text-slate-400">
           Dieťa
         </label>
         <select
           name="child_id"
           required
-          className="mb-4 w-full rounded border border-gray-300 p-2"
+          className="mb-4 w-full rounded-lg border border-slate-700 bg-slate-800/50 p-2.5 text-sm text-white outline-none focus:border-indigo-500"
         >
           {children?.map((child) => (
             <option key={child.id} value={child.id}>
@@ -58,12 +72,12 @@ export default async function TransactionsPage() {
           ))}
         </select>
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="mb-1.5 block text-xs font-medium text-slate-400">
           Vybrať z preddefinovaného pravidla (voliteľné)
         </label>
         <select
           id="rule-select"
-          className="mb-4 w-full rounded border border-gray-300 p-2"
+          className="mb-4 w-full rounded-lg border border-slate-700 bg-slate-800/50 p-2.5 text-sm text-white outline-none focus:border-indigo-500"
           defaultValue=""
         >
           <option value="">— vlastný zápis —</option>
@@ -79,7 +93,7 @@ export default async function TransactionsPage() {
           ))}
         </select>
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="mb-1.5 block text-xs font-medium text-slate-400">
           Počet minút (kladné = pridať, záporné = odobrať)
         </label>
         <input
@@ -87,10 +101,10 @@ export default async function TransactionsPage() {
           name="amount"
           id="amount-input"
           required
-          className="mb-4 w-full rounded border border-gray-300 p-2"
+          className="mb-4 w-full rounded-lg border border-slate-700 bg-slate-800/50 p-2.5 text-sm text-white outline-none focus:border-indigo-500"
         />
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="mb-1.5 block text-xs font-medium text-slate-400">
           Dôvod
         </label>
         <input
@@ -98,16 +112,16 @@ export default async function TransactionsPage() {
           name="reason"
           id="reason-input"
           required
-          className="mb-4 w-full rounded border border-gray-300 p-2"
+          className="mb-4 w-full rounded-lg border border-slate-700 bg-slate-800/50 p-2.5 text-sm text-white outline-none focus:border-indigo-500"
         />
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">
+        <label className="mb-1.5 block text-xs font-medium text-slate-400">
           Typ
         </label>
         <select
           name="type"
           required
-          className="mb-6 w-full rounded border border-gray-300 p-2"
+          className="mb-6 w-full rounded-lg border border-slate-700 bg-slate-800/50 p-2.5 text-sm text-white outline-none focus:border-indigo-500"
         >
           <option value="reward">Odmena</option>
           <option value="penalty">Trest</option>
@@ -116,7 +130,7 @@ export default async function TransactionsPage() {
 
         <button
           type="submit"
-          className="w-full rounded bg-blue-600 p-2 font-semibold text-white hover:bg-blue-700"
+          className="w-full rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/30 transition hover:from-emerald-400 hover:to-teal-500"
         >
           Uložiť
         </button>
@@ -135,6 +149,9 @@ export default async function TransactionsPage() {
           `,
         }}
       />
+
+      <BottomNav isParent={true} />
     </main>
   )
 }
+
