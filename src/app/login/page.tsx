@@ -17,17 +17,12 @@ export default async function LoginPage({
           Rodinný Screen Time
         </h1>
 
-                {params.error && (
+         {params.error && (
           <p className="mb-4 rounded bg-red-100 p-2 text-sm text-red-700">
             Nesprávny email alebo heslo.
-            {params.msg && (
-              <>
-                <br />
-                <span className="text-xs">Detail: {params.msg}</span>
-              </>
-            )}
           </p>
         )}
+
 
 
         <label className="mb-1 block text-sm font-medium text-gray-700">
