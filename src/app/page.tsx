@@ -81,6 +81,13 @@ export default async function Home() {
           })}
         </div>
 
+                <a
+          href="/admin-users"
+          className="mt-4 block text-center text-sm text-slate-400 hover:text-slate-200"
+        >
+          Správa hesiel používateľov
+        </a>
+
         <BottomNav isParent={isParent} />
       </main>
     )
